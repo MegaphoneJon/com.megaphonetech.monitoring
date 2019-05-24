@@ -17,7 +17,7 @@ function monitoring_civicrm_permission(&$permissions) {
  * Implements hook_civicrm_alterAPIPermissions().
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  $permissions['system']['check'] = ['remote monitoring'];
+  $permissions['system']['check'] = [['remote monitoring','administer CiviCRM',]];
 }
 
 /**
