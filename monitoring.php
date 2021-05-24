@@ -15,7 +15,7 @@ function monitoring_civicrm_permission(&$permissions) {
   ];
 }
 
-function monitoring_civicrm_check(&$messages, $statusNames, $includeDisabled) {
+function monitoring_civicrm_check(&$messages) {
   monitoring_checkIndices($messages);
 }
 
