@@ -15,6 +15,47 @@ function monitoring_civicrm_permission(&$permissions) {
   ];
 }
 
+function monitoring_civicrm_check(&$messages, $statusNames, $includeDisabled) {
+  monitoring_checkIndices($messages);
+}
+
+/**
+ * This is cribbed directly from core, where the check is disabled.
+ */
+function monitoring_checkIndices(&$messages) {
+
+  $missingIndices = civicrm_api3('System', 'getmissingindices', [])['values'];
+  if ($missingIndices) {
+    $html = '';
+    foreach ($missingIndices as $tableName => $indices) {
+      foreach ($indices as $index) {
+        $fields = implode(', ', $index['field']);
+        $html .= "<tr><td>{$tableName}</td><td>{$index['name']}</td><td>$fields</td>";
+      }
+    }
+    $message = "<p>The following tables have missing indices. Click 'Update Indices' button to create them.<p>
+      <p><table><thead><tr><th>Table Name</th><th>Key Name</th><th>Expected Indices</th>
+      </tr></thead><tbody>
+      $html
+      </tbody></table></p>";
+    $msg = new CRM_Utils_Check_Message(
+      __FUNCTION__,
+      ts($message),
+      ts('Performance warning: Missing indices'),
+      \Psr\Log\LogLevel::WARNING,
+      'fa-server'
+    );
+    $msg->addAction(
+      ts('Update Indices'),
+      ts('Update all database indices now? This may take a few minutes and cause a noticeable performance lag for all users while running.'),
+      'api3',
+      ['System', 'updateindexes']
+    );
+    $messages[] = $msg;
+  }
+  return $messages;
+}
+
 /**
  * Implements hook_civicrm_alterAPIPermissions().
  */
