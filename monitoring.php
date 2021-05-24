@@ -7,17 +7,19 @@ use CRM_Monitoring_ExtensionUtil as E;
  * Implements hook_civicrm_permission().
  */
 function monitoring_civicrm_permission(&$permissions) {
-  $permissions += ['remote monitoring' =>
-                    [ts('CiviCRM Remote Monitoring', ['domain' => 'com.megaphonetech.monitoring']),
-                     ts('Grants the necessary API permissions for a monitoring user without Administer CiviCRM', ['domain' => 'com.megaphonetech.monitoring']),
-                    ],
-                  ];
+  $permissions += [
+    'remote monitoring' =>
+    [ts('CiviCRM Remote Monitoring', ['domain' => 'com.megaphonetech.monitoring']),
+      ts('Grants the necessary API permissions for a monitoring user without Administer CiviCRM', ['domain' => 'com.megaphonetech.monitoring']),
+    ],
+  ];
 }
+
 /**
  * Implements hook_civicrm_alterAPIPermissions().
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  $permissions['system']['check'] = [['remote monitoring','administer CiviCRM',]];
+  $permissions['system']['check'] = [['remote monitoring', 'administer CiviCRM']];
 }
 
 /**
