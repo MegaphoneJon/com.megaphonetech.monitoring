@@ -7,17 +7,60 @@ use CRM_Monitoring_ExtensionUtil as E;
  * Implements hook_civicrm_permission().
  */
 function monitoring_civicrm_permission(&$permissions) {
-  $permissions += ['remote monitoring' =>
-                    [ts('CiviCRM Remote Monitoring', ['domain' => 'com.megaphonetech.monitoring']),
-                     ts('Grants the necessary API permissions for a monitoring user without Administer CiviCRM', ['domain' => 'com.megaphonetech.monitoring']),
-                    ],
-                  ];
+  $permissions += [
+    'remote monitoring' =>
+    [ts('CiviCRM Remote Monitoring', ['domain' => 'com.megaphonetech.monitoring']),
+      ts('Grants the necessary API permissions for a monitoring user without Administer CiviCRM', ['domain' => 'com.megaphonetech.monitoring']),
+    ],
+  ];
 }
+
+function monitoring_civicrm_check(&$messages) {
+  monitoring_checkIndices($messages);
+}
+
+/**
+ * This is cribbed directly from core, where the check is disabled.
+ */
+function monitoring_checkIndices(&$messages) {
+
+  $missingIndices = civicrm_api3('System', 'getmissingindices', [])['values'];
+  if ($missingIndices) {
+    $html = '';
+    foreach ($missingIndices as $tableName => $indices) {
+      foreach ($indices as $index) {
+        $fields = implode(', ', $index['field']);
+        $html .= "<tr><td>{$tableName}</td><td>{$index['name']}</td><td>$fields</td>";
+      }
+    }
+    $message = "<p>The following tables have missing indices. Click 'Update Indices' button to create them.<p>
+      <p><table><thead><tr><th>Table Name</th><th>Key Name</th><th>Expected Indices</th>
+      </tr></thead><tbody>
+      $html
+      </tbody></table></p>";
+    $msg = new CRM_Utils_Check_Message(
+      __FUNCTION__,
+      ts($message),
+      ts('Performance warning: Missing indices'),
+      \Psr\Log\LogLevel::WARNING,
+      'fa-server'
+    );
+    $msg->addAction(
+      ts('Update Indices'),
+      ts('Update all database indices now? This may take a few minutes and cause a noticeable performance lag for all users while running.'),
+      'api3',
+      ['System', 'updateindexes']
+    );
+    $messages[] = $msg;
+  }
+  return $messages;
+}
+
 /**
  * Implements hook_civicrm_alterAPIPermissions().
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  $permissions['system']['check'] = ['remote monitoring'];
+  $permissions['system']['check'] = [['remote monitoring', 'administer CiviCRM']];
 }
 
 /**
