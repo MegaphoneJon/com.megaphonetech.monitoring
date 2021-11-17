@@ -61,6 +61,7 @@ function monitoring_checkIndices(&$messages) {
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $permissions['system']['check'] = [['remote monitoring', 'administer CiviCRM']];
+  $permissions['status_preference']['create'] = [['remote monitoring', 'administer CiviCRM']];
 }
 
 /**
