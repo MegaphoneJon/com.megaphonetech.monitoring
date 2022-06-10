@@ -20,9 +20,13 @@ function monitoring_civicrm_check(&$messages) {
 }
 
 /**
- * This is cribbed directly from core, where the check is disabled.
+ * This is cribbed directly from core, where the check is disabled (plus a check not to run when db upgrade is needed).
  */
 function monitoring_checkIndices(&$messages) {
+  if (CRM_Core_BAO_Domain::isDBUpdateRequired()) {
+    // Do not run this check when the db has not been updated as it might fail on non-updated schema issues.
+    return [];
+  }
 
   $missingIndices = civicrm_api3('System', 'getmissingindices', [])['values'];
   if ($missingIndices) {
@@ -61,6 +65,7 @@ function monitoring_checkIndices(&$messages) {
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $permissions['system']['check'] = [['remote monitoring', 'administer CiviCRM']];
+  $permissions['status_preference']['create'] = [['remote monitoring', 'administer CiviCRM']];
 }
 
 /**
@@ -193,31 +198,3 @@ function monitoring_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function monitoring_civicrm_entityTypes(&$entityTypes) {
   _monitoring_civix_civicrm_entityTypes($entityTypes);
 }
-
-// --- Functions below this ship commented out. Uncomment as required. ---
-
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function monitoring_civicrm_preProcess($formName, &$form) {
-
-} // */
-
-/**
- * Implements hook_civicrm_navigationMenu().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
- *
-function monitoring_civicrm_navigationMenu(&$menu) {
-  _monitoring_civix_insert_navigation_menu($menu, 'Mailings', array(
-    'label' => E::ts('New subliminal message'),
-    'name' => 'mailing_subliminal_message',
-    'url' => 'civicrm/mailing/subliminal',
-    'permission' => 'access CiviMail',
-    'operator' => 'OR',
-    'separator' => 0,
-  ));
-  _monitoring_civix_navigationMenu($menu);
-} // */
