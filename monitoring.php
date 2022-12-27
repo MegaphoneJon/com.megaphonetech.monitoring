@@ -61,7 +61,18 @@ function monitoring_checkIndices(&$messages) {
 }
 
 /**
- * Implements hook_civicrm_alterAPIPermissions().
+ * Gives the monitoring user permission to access API4 System.check.
+ * TODO maybe: StatusPreference.Create authorization provider?
+ */
+function monitoring_authorizeCheck(\Civi\API\Event\AuthorizeEvent $event) {
+  $apiRequest = $event->getApiRequest();
+  if ($apiRequest instanceof \Civi\Api4\Action\System\Check) {
+    $event->setAuthorized(user_access('remote monitoring'));
+  }
+}
+
+/**
+ * Gives the monitoring user permission to access API3 System.check, and to set status preferences (for hushing checks).
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $permissions['system']['check'] = [['remote monitoring', 'administer CiviCRM']];
@@ -75,6 +86,7 @@ function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$pe
  */
 function monitoring_civicrm_config(&$config) {
   _monitoring_civix_civicrm_config($config);
+  Civi::dispatcher()->addListener('civi.api.authorize', "monitoring_authorizeCheck");
 }
 
 /**
