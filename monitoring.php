@@ -67,7 +67,7 @@ function monitoring_checkIndices(&$messages) {
 function monitoring_authorizeCheck(\Civi\API\Event\AuthorizeEvent $event) {
   $apiRequest = $event->getApiRequest();
   if ($apiRequest instanceof \Civi\Api4\Action\System\Check) {
-    $event->setAuthorized(user_access('remote monitoring'));
+    $event->setAuthorized(CRM_Core_Permission::check('remote monitoring'));
   }
 }
 
