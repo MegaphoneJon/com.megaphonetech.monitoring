@@ -72,6 +72,15 @@ function monitoring_authorizeCheck(\Civi\API\Event\AuthorizeEvent $event) {
 }
 
 /**
+ * Gives a user with the permission "remote monitoring" to access API4 System.check.
+ */
+function monitoring_civicrm_alterApiRoutePermissions(&$permissions, $entity, $action) {
+  if ($entity === 'System' && $action === 'check') {
+    $permissions[0][] = 'remote monitoring';
+  }
+}
+
+/**
  * Gives the monitoring user permission to access API3 System.check, and to set status preferences (for hushing checks).
  */
 function monitoring_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
