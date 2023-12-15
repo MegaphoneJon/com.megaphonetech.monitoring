@@ -23,6 +23,9 @@
   <comments>Creates a limited permission for remote monitoring. TODO: Add additional checks to CiviCRM.</comments>
   <civix>
     <namespace>CRM/Monitoring</namespace>
-    <format>22.05.0</format>
+    <format>23.02.1</format>
   </civix>
+  <classloader>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
 </extension>
