@@ -28,6 +28,7 @@ function monitoring_checkXdebug(&$messages) {
       'fa-bug'
     );
   }
+  return $messages;
 }
 
 /**
