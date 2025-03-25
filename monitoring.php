@@ -7,7 +7,7 @@ use CRM_Monitoring_ExtensionUtil as E;
  * Implements hook_civicrm_permission().
  */
 function monitoring_civicrm_permission(&$permissions) {
-  $permissions['remote monitoring']= [
+  $permissions['remote monitoring'] = [
     'label' => E::ts('CiviCRM Remote Monitoring'),
     'description' => E::ts('Grants the necessary API permissions for a monitoring user without Administer CiviCRM'),
   ];
@@ -15,6 +15,19 @@ function monitoring_civicrm_permission(&$permissions) {
 
 function monitoring_civicrm_check(&$messages) {
   monitoring_checkIndices($messages);
+  monitoring_checkXdebug($messages);
+}
+
+function monitoring_checkXdebug(&$messages) {
+  if (function_exists('xdebug_is_debugger_active') && xdebug_is_debugger_active()) {
+    $messages[] = new CRM_Utils_Check_Message(
+      __FUNCTION__,
+      ts('XDebug must be turned off on this site.'),
+      ts('XDebug is enabled'),
+      \Psr\Log\LogLevel::WARNING,
+      'fa-bug'
+    );
+  }
 }
 
 /**
