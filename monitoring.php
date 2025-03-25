@@ -21,7 +21,7 @@ function monitoring_civicrm_check(&$messages) {
 function monitoring_checkXdebug(&$messages) {
   if (function_exists('xdebug_is_debugger_active') && xdebug_is_debugger_active()) {
     $messages[] = new CRM_Utils_Check_Message(
-      __FUNCTION__,
+      'checkXdebug',
       ts('XDebug must be turned off on this site.'),
       ts('XDebug is enabled'),
       \Psr\Log\LogLevel::WARNING,
