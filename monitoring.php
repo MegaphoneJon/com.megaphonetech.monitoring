@@ -16,6 +16,20 @@ function monitoring_civicrm_permission(&$permissions) {
 function monitoring_civicrm_check(&$messages) {
   monitoring_checkIndices($messages);
   monitoring_checkXdebug($messages);
+  monitoring_checkUploadProgress($messages);
+}
+
+function monitoring_checkUploadProgress(&$messages) {
+  if (filter_var(ini_get('session.upload_progress.enabled'), FILTER_VALIDATE_BOOLEAN)) {
+    $messages[] = new CRM_Utils_Check_Message(
+      'checkUploadProgress',
+      ts('The PHP setting session.upload_progress.enabled must be turned off on this site.'),
+      ts('PHP session upload progress is enabled'),
+      \Psr\Log\LogLevel::ERROR,
+      'fa-upload'
+    );
+  }
+  return $messages;
 }
 
 function monitoring_checkXdebug(&$messages) {
