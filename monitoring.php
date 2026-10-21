@@ -16,7 +16,7 @@ function monitoring_civicrm_permission(&$permissions) {
 function monitoring_civicrm_check(&$messages) {
   monitoring_checkIndices($messages);
   monitoring_checkXdebug($messages);
-  monitoring_checkUploadProgress($messages);
+  // monitoring_checkUploadProgress($messages);
 }
 
 function monitoring_checkUploadProgress(&$messages) {
